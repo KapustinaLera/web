@@ -1,0 +1,23 @@
+@startuml Singleton
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing false
+
+namespace Singleton {
+  class Settings {
+    - static Settings _object
+    - array _settings
+    - __construct()
+    - __clone()
+    + {static} get() : Settings
+    + __get(key) : mixed
+    + __set(key, value) : void
+  }
+}
+
+note right of Singleton.Settings
+  **Шаблон Singleton**
+  Гарантирует единственный экземпляр класса.
+  Конструктор и клонирование приватные.
+end note
+@enduml
