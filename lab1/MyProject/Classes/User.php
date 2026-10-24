@@ -35,9 +35,11 @@ class User extends AbstractUser
     /**
      * Деструктор класса User
      */
+
+
     public function __destruct()
     {
-        echo "Пользователь {$this->login} удален.\n";
+    echo "Пользователь {$this->login} удален.<br>\n";
     }
 
     /**
