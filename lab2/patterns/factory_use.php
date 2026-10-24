@@ -1,22 +1,28 @@
 <?php
 declare(strict_types=1);
 
-// Явно подключаем все необходимые файлы
-require_once __DIR__ . '/factory/router.php';
-require_once __DIR__ . '/factory/models/collection.php';
-require_once __DIR__ . '/factory/models/user.php';
-require_once __DIR__ . '/factory/models/users.php';
+spl_autoload_register(function (string $class): void {
+    $prefixes = [
+        'Factory\\' => __DIR__ . '/factory/',
+        'MVC\\'     => __DIR__ . '/mvc/',
+    ];
+
+    foreach ($prefixes as $prefix => $baseDir) {
+        $len = strlen($prefix);
+        if (strncmp($prefix, $class, $len) === 0) {
+            $relativeClass = substr($class, $len);
+            
+            $file = $baseDir . strtolower(str_replace('\\', '/', $relativeClass)) . '.php';
+            
+            if (file_exists($file)) {
+                require $file;
+                return;
+            }
+        }
+    }
+});
 
 use Factory\Router;
 
 $obj = Router::parse('users');
-echo $obj->render();
-
-
-// spl_autoload_register();
-
-// use Factory\Router;
-
-// $obj = Router::parse('users');
-// echo $obj->render(); -->
-
+echo $obj->render() . "\n";
