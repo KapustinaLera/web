@@ -1,0 +1,36 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing false
+
+abstract class AbstractUser {
+    + {abstract} showInfo() : void
+}
+
+class User {
+    + {static} count : int
+    + name : string
+    + login : string
+    - password : string
+    + __construct(name: string, login: string, password: string)
+    + __destruct()
+    + showInfo() : void
+    + getPassword() : string
+}
+
+class SuperUser {
+    + {static} count : int
+    + role : string
+    + __construct(name: string, login: string, password: string, role: string)
+    + showInfo() : void
+    + getInfo() : array
+}
+
+interface SuperUserInterface {
+    + getInfo() : array
+}
+
+AbstractUser <|-- User : наследует
+User <|-- SuperUser : наследует
+SuperUser ..|> SuperUserInterface : реализует
+@enduml
