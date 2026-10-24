@@ -1,7 +1,23 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/settings.php';
+spl_autoload_register(function (string $class): void {
+    $prefix = 'Singleton\\';
+    $baseDir = __DIR__ . '/singleton/';
+
+    $len = strlen($prefix);
+    if (strncmp($prefix, $class, $len) !== 0) {
+        return;
+    }
+
+    $relativeClass = substr($class, $len);
+    
+    $file = $baseDir . strtolower(str_replace('\\', '/', $relativeClass)) . '.php';
+
+    if (file_exists($file)) {
+        require $file;
+    }
+});
 
 use Singleton\Settings;
 
@@ -15,6 +31,7 @@ $settings->debug_mode = true;                 // логическое
 
 // Проверяем, что это действительно один и тот же объект
 $settings2 = Settings::get();
+
 echo "<pre>";
 echo "Это один и тот же объект? " . ($settings === $settings2 ? 'ДА' : 'НЕТ') . "\n\n";
 
@@ -24,10 +41,3 @@ echo "Имя приложения: " . $settings->app_name . "\n";
 echo "Максимум пользователей: " . $settings->max_users . "\n";
 echo "Режим отладки: " . ($settings->debug_mode ? 'включён' : 'выключен') . "\n";
 echo "</pre>";
-
-// spl_autoload_register();
-
-// use Singleton\Settings;
-
-// Settings::get()->items_per_page = 20;
-// echo Settings::get()->items_per_page; // 20 -->
