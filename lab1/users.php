@@ -19,6 +19,8 @@ spl_autoload_register(function (string $class): void {
     }
 });
 
+echo "<pre>";
+
 use MyProject\Classes\User;
 use MyProject\Classes\SuperUser;
 
@@ -44,4 +46,5 @@ echo "Всего обычных пользователей: " . User::$count . "
 echo "Всего супер-пользователей: " . SuperUser::$count . "\n";
 
 echo "\nЗавершение скрипта (автоматический вызов деструкторов)\n";
-// Деструкторы будут вызваны автоматически при завершении работы скрипта
+
+echo "</pre>";
