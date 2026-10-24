@@ -1,0 +1,59 @@
+@startuml Factory
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+
+namespace Factory {
+  abstract class Router {
+    + {static} parse(path : string) : mixed
+    + {abstract} render() : string
+  }
+  
+  namespace Models {
+    class Collection {
+      + array collection
+      + __construct(collection : array)
+      + renders() : array
+      + render() : string
+    }
+    
+    class Users {
+      + __construct(users : array)
+    }
+    
+    class Pages {
+      + __construct(pages : array)
+      + render() : string
+    }
+    
+    class User {
+      + string email
+      - string password
+      + string first_name
+      + string last_name
+      + __construct(...)
+      + render() : string
+    }
+    
+    class Page {
+      + string title
+      + string content
+      + __construct(...)
+      + render() : string
+    }
+  }
+  
+  Router <|-- Models.Collection
+  Router <|-- Models.User
+  Router <|-- Models.Page
+  Models.Collection <|-- Models.Users
+  Models.Collection <|-- Models.Pages
+  Models.Collection o--> "0..*" Models.User
+  Models.Collection o--> "0..*" Models.Page
+}
+
+note right of Factory
+  **Шаблон Factory Method**
+  Router::parse() создаёт нужный объект
+  в зависимости от URL.
+end note
+@enduml
