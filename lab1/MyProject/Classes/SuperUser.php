@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace MyProject\Classes;
 
-require_once __DIR__ . '/User.php';
-require_once __DIR__ . '/SuperUserInterface.php';
-
 /**
  * Класс SuperUser
  * Наследуется от User и реализует SuperUserInterface
@@ -14,6 +11,8 @@ class SuperUser extends User implements SuperUserInterface
 {
     public string $role;
     
+    // Явно объявляем свойство, чтобы перекрыть родительское 
+    // и избежать динамических свойств
     protected string $password;
 
     /** @var int Счетчик созданных экземпляров класса SuperUser */
@@ -27,7 +26,7 @@ class SuperUser extends User implements SuperUserInterface
     {
         $this->name = $name;
         $this->login = $login;
-        $this->password = $password; 
+        $this->password = $password;
         $this->role = $role;
         
         self::$count++;
@@ -50,7 +49,7 @@ class SuperUser extends User implements SuperUserInterface
         return [
             'name' => $this->name,
             'login' => $this->login,
-            'password' => $this->password, // Прямой доступ к protected свойству
+            'password' => $this->password,
             'role' => $this->role
         ];
     }
