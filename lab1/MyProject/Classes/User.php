@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace MyProject\Classes;
 
-require_once __DIR__ . '/AbstractUser.php';
-
 /**
  * Класс User
  * Представляет обычного пользователя системы
@@ -13,16 +11,13 @@ class User extends AbstractUser
 {
     public string $name;
     public string $login;
-    private string $password;
+    protected string $password; 
 
     /** @var int Счетчик созданных экземпляров класса User */
     public static int $count = 0;
 
     /**
      * Конструктор класса User
-     * @param string $name Имя пользователя
-     * @param string $login Логин пользователя
-     * @param string $password Пароль пользователя
      */
     public function __construct(string $name, string $login, string $password)
     {
@@ -35,16 +30,13 @@ class User extends AbstractUser
     /**
      * Деструктор класса User
      */
-
-
     public function __destruct()
     {
-    echo "Пользователь {$this->login} удален.<br>\n";
+        echo "Пользователь {$this->login} удален.\n";
     }
 
     /**
      * Выводит информацию о пользователе
-     * @return void
      */
     public function showInfo(): void
     {
@@ -52,10 +44,7 @@ class User extends AbstractUser
     }
 
     /**
-     * Геттер для приватного свойства password.
-     * Необходим для доступа к значению из класса-наследника (SuperUser),
-     * так как прямое обращение к private свойству из наследника запрещено в PHP.
-     * @return string
+     * Геттер для свойства password
      */
     public function getPassword(): string
     {
