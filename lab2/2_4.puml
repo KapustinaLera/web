@@ -1,0 +1,90 @@
+@startuml MVC
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+
+namespace MVC {
+  namespace Controllers {
+    class Controller {
+      + string path
+      + Router router
+      + object model
+      + __construct(path : string)
+      + render() : string
+    }
+    
+    class Router {
+      + {static} parse(path : string) : Router
+    }
+  }
+  
+  namespace Models {
+    class User {
+      + string email
+      + string first_name
+      + string last_name
+    }
+    
+    class Users {
+      + __construct(users : array)
+    }
+  }
+  
+  namespace Decorators {
+    class DecoratorFactory {
+      + {static} create(...) : Decorator
+    }
+    
+    class UserDecorator {
+      + title() : string
+      + body() : string
+    }
+    
+    class UsersDecorator {
+      + title() : string
+      + body() : string
+    }
+  }
+  
+  namespace Views {
+    abstract class ViewFactory {
+      + {abstract} render() : string
+      + {static} create(...) : ViewFactory
+    }
+    
+    class HtmlView {
+      + render() : string
+    }
+    
+    class UserHtmlView {
+    }
+    
+    class MarkdownView {
+      + render() : string
+    }
+    
+    class UsersMdView {
+    }
+  }
+  
+  Controller --> Controllers.Router : использует
+  Controller --> Models : создаёт модель
+  Controller --> Decorators.DecoratorFactory : создаёт декоратор
+  Controller --> Views.ViewFactory : создаёт представление
+  
+  Decorators.DecoratorFactory ..> UserDecorator
+  Decorators.DecoratorFactory ..> UsersDecorator
+  
+  Views.ViewFactory <|-- Views.HtmlView
+  Views.ViewFactory <|-- Views.MarkdownView
+  Views.HtmlView <|-- Views.UserHtmlView
+  Views.MarkdownView <|-- Views.UsersMdView
+  
+  Views.UsersMdView ..> Decorators.UsersDecorator : использует
+}
+
+note bottom of MVC
+  **Шаблон MVC**
+  Controller координирует Model, 
+  Decorator и View.
+end note
+@enduml
