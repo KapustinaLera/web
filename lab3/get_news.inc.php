@@ -21,12 +21,12 @@ if ($newsList === false) {
         $datetime = date('d.m.Y H:i', (int)$item['datetime']);
 
         echo '<article>';
-        echo '<h2>' . $title . '</h2>';
+        // echo '<h2>' . $title . '</h2>';
+        echo "<h3><a href='?id=" . $item['id'] . "'>" . htmlspecialchars($item['title']) . "</a></h3>";
         echo '<p><em>Категория: ' . $category . ' | Дата: ' . $datetime . '</em></p>';
         echo '<p>' . $description . '</p>';
         echo '<p>Источник: ' . $source . '</p>';
         echo '<p>';
-        echo '<a href="?id=' . $id . '">Подробнее</a> | ';
         echo '<a href="?del=' . $id . '" onclick="return confirm(\'Удалить новость?\');">Удалить</a>';
         echo '</p>';
         echo '</article><hr>';
