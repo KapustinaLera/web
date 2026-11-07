@@ -10,7 +10,7 @@ interface IteratorAggregate {
 }
 
 class NewsDB {
-  {static} DB_NAME: string = "news.db"
+  {static} +DB_NAME: string = "news.db"
   -_db: SQLite3
   -items: array = []
   +__construct()
