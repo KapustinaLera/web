@@ -10,7 +10,7 @@ interface IteratorAggregate {
 }
 
 class NewsDB {
-  -DB_NAME: string = "news.db"
+  {static} DB_NAME: string = "news.db"
   -_db: SQLite3
   -items: array = []
   +__construct()
@@ -18,7 +18,7 @@ class NewsDB {
   +saveNews(title, category, description, source): boolean
   +getNews(): array
   +deleteNews(id): boolean
-  -getCategories(): void
+  -getCategories(): array
   +getIterator(): Traversable
   #getDb(): SQLite3
 }
@@ -27,6 +27,7 @@ class SQLite3 {
   +query(sql): SQLite3Result
   +exec(sql): bool
   +prepare(sql): SQLite3Stmt
+  +close(): bool
 }
 
 INewsDB <|.. NewsDB
