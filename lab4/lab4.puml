@@ -27,7 +27,6 @@ class SQLite3 {
   +query(sql): SQLite3Result
   +exec(sql): bool
   +prepare(sql): SQLite3Stmt
-  +close(): bool
 }
 
 INewsDB <|.. NewsDB
