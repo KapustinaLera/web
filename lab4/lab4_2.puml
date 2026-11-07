@@ -1,0 +1,23 @@
+@startuml
+interface Iterator {
+  +rewind(): void
+  +valid(): bool
+  +next(): void
+  +key(): mixed
+  +current(): mixed
+}
+
+class NumbersSquared {
+  -start: int
+  -end: int
+  -current: int
+  +__construct(start, end)
+  +rewind(): void
+  +valid(): bool
+  +next(): void
+  +key(): mixed
+  +current(): mixed
+}
+
+Iterator <|.. NumbersSquared : implements
+@enduml
