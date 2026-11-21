@@ -16,9 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <title>Новостная лента</title>
     <meta charset="utf-8">
+    <link rel="alternate" type="application/rss+xml" title="RSS Лента" href="<?= NewsDB::RSS_NAME ?>">
 </head>
 <body>
-    <h1>Последние новости</h1>
+    <h1>Последние новости 
+        <a href="<?= NewsDB::RSS_NAME ?>" style="font-size: 0.6em; text-decoration: none;">📡 RSS</a>
+    </h1>
     
     <?php if ($errMsg !== ''): ?>
         <p style="color: red;"><?= htmlspecialchars($errMsg) ?></p>
