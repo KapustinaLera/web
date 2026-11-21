@@ -1,5 +1,6 @@
 @startuml Lab6_PDO
 skinparam classAttributeIconSize 0
+left to right direction
 
 interface INewsDB {
   +saveNews(title, category, description, source): boolean
@@ -32,7 +33,6 @@ class PDO {
   +beginTransaction(): bool
   +commit(): bool
   +rollBack(): bool
-  +inTransaction(): bool
   +errorCode(): string
   +errorInfo(): array
 }
@@ -50,34 +50,36 @@ class PDOException {
 
 class ArrayIterator
 
+class DOMNode {
+  +appendChild(node): DOMNode
+}
+
 class DOMDocument {
   +formatOutput: bool
   +preserveWhiteSpace: bool
   +createElement(name, value): DOMElement
   +createAttribute(name): DOMAttr
   +createCDATASection(data): DOMCdataSection
-  +appendChild(node): DOMNode
   +save(filename): bool
 }
 
-class DOMElement {
-  +appendChild(node): DOMNode
-}
+class DOMElement extends DOMNode
 
-class DOMAttr {
-  +value: string
-}
+class DOMAttr extends DOMNode
 
-class DOMCdataSection
+class DOMCdataSection extends DOMNode
 
 INewsDB <|.. NewsDB : implements
 
-' NewsDB использует PDO вместо SQLite3
+' NewsDB использует PDO
 NewsDB --> PDO : uses
-PDO ..> PDOStatement : creates
 
-' Создание итератора для категорий
-NewsDB ..> ArrayIterator : creates
+' PDO создает Statement и выбрасывает исключения
+PDO ..> PDOStatement : creates via query()
+PDO ..> PDOException : throws on error
+
+' Создание итератора
+NewsDB ..> ArrayIterator : creates in getIterator()
 
 ' Создание RSS через DOM
 NewsDB ..> DOMDocument : creates in createRss()
