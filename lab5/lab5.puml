@@ -1,7 +1,8 @@
-@startuml Lab5_XML_DOM
+@startuml Lab5_XML_RSS
 skinparam classAttributeIconSize 0
 left to right direction
 
+' === Интерфейсы ===
 interface INewsDB {
   +saveNews(title, category, description, source): boolean
   +getNews(): array
@@ -12,19 +13,12 @@ interface IteratorAggregate {
   +getIterator(): Traversable
 }
 
-interface Iterator {
-  +rewind(): void
-  +valid(): bool
-  +next(): void
-  +key(): mixed
-  +current(): mixed
-}
-
+' === Главный класс NewsDB ===
 class NewsDB {
   {static} DB_NAME: string = "news.db"
   {static} RSS_NAME: string = "rss.xml"
   {static} RSS_TITLE: string = "Последние новости"
-  {static} RSS_LINK: string = "http://.../news.php"
+  {static} RSS_LINK: string = "http://site.ru/news.php"
   -_db: SQLite3
   -items: array = []
   +__construct()
@@ -32,12 +26,13 @@ class NewsDB {
   +saveNews(title, category, description, source): boolean
   +getNews(): array
   +deleteNews(id): boolean
-  -getCategories(): void
+  -getCategories(): array
   +getIterator(): Traversable
   +createRss(): void
   #getDb(): SQLite3
 }
 
+' === Классы БД ===
 class SQLite3 {
   +query(sql): SQLite3Result
   +exec(sql): bool
@@ -47,20 +42,7 @@ class SQLite3 {
 
 class ArrayIterator
 
-class NumbersSquared {
-  -start: int
-  -end: int
-  -current: int
-  +__construct(start, end)
-  +rewind(): void
-  +valid(): bool
-  +next(): void
-  +key(): mixed
-  +current(): mixed
-}
-
-
-
+' === DOM-классы  ===
 class DOMDocument {
   +formatOutput: bool
   +preserveWhiteSpace: bool
@@ -81,23 +63,15 @@ class DOMAttr {
 
 class DOMCdataSection
 
-class DOMText
-
+' === Связи ===
 INewsDB <|.. NewsDB : implements
 IteratorAggregate <|.. NewsDB : implements
-
 NewsDB --> SQLite3 : uses
-
 NewsDB ..> ArrayIterator : creates in getIterator()
-ArrayIterator ..|> Iterator : implements
-
-Iterator <|.. NumbersSquared : implements
 
 NewsDB ..> DOMDocument : creates in createRss()
-
 DOMDocument o--> DOMElement : creates
 DOMDocument o--> DOMAttr : creates
 DOMDocument o--> DOMCdataSection : creates
-DOMDocument o--> DOMText : creates
 
 @enduml
