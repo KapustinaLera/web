@@ -1,16 +1,17 @@
 <?php
 require_once __DIR__ . '/INewsDB.class.php';
 
-class NewsDB implements INewsDB
+class NewsDB implements INewsDB, IteratorAggregate
 {
     const DB_NAME = 'news.db';
     
-    //  НОВЫЕ КОНСТАНТЫ ДЛЯ RSS 
     const RSS_NAME = 'rss.xml';
     const RSS_TITLE = 'Последние новости';
     const RSS_LINK = 'https://f1326258.xsph.ru/lab5/news.php'; 
 
     private $_db;
+    
+    private array $items = [];
 
     public function __construct()
     {
@@ -43,6 +44,8 @@ class NewsDB implements INewsDB
                 UNION SELECT 3 as id, 'Спорт' as name
             ");
         }
+        
+        $this->getCategories();
     }
 
     public function __destruct()
@@ -55,6 +58,23 @@ class NewsDB implements INewsDB
     protected function getDb()
     {
         return $this->_db;
+    }
+
+    private function getCategories(): void
+    {
+        $res = $this->_db->query('SELECT id, name FROM category');
+        $this->items = [];
+        
+        if ($res) {
+            while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
+                $this->items[$row['id']] = $row['name'];
+            }
+        }
+    }
+
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->items);
     }
 
     public function saveNews($title, $category, $description, $source)
@@ -79,7 +99,6 @@ class NewsDB implements INewsDB
         $result = $stmt->execute();
         $stmt->close();
 
-        // ВЫЗОВ МЕТОДА СОЗДАНИЯ RSS ПОСЛЕ УСПЕШНОГО ДОБАВЛЕНИЯ
         if ($result) {
             $this->createRss();
         }
@@ -128,79 +147,63 @@ class NewsDB implements INewsDB
             return false;
         }
 
-        // ОБНОВЛЯЕМ RSS ПРИ УДАЛЕНИИ НОВОСТИ 
         $this->createRss();
 
         return $this->_db->changes() > 0;
     }
 
-    // НОВЫЙ МЕТОД: Создание RSS-ленты с помощью DOMDocument
     public function createRss(): void
     {
-        // 1. Создаем объект DOMDocument
         $dom = new DOMDocument('1.0', 'utf-8');
         $dom->formatOutput = true; 
         $dom->preserveWhiteSpace = false;
 
-        // 2. Создаем корневой элемент rss и привязываем к $dom
         $rss = $dom->createElement('rss');
         $dom->appendChild($rss);
 
-        // 3. Создаем и добавляем атрибут version="2.0"
         $version = $dom->createAttribute('version');
         $version->value = '2.0';
         $rss->appendChild($version);
 
-        // 4. Создаем элемент channel и привязываем к rss
         $channel = $dom->createElement('channel');
         $rss->appendChild($channel);
 
-        // 5. Создаем элементы title и link для channel (из констант)
         $title = $dom->createElement('title', self::RSS_TITLE);
         $channel->appendChild($title);
 
         $link = $dom->createElement('link', self::RSS_LINK);
         $channel->appendChild($link);
 
-        // 6. Получаем данные из БД
         $newsList = $this->getNews();
 
         if ($newsList) {
             foreach ($newsList as $item) {
-                // Создаем элемент item
                 $xmlItem = $dom->createElement('item');
 
-                // title (экранируем спецсимволы для XML)
                 $xmlTitle = $dom->createElement('title', htmlspecialchars($item['title'], ENT_XML1, 'UTF-8'));
                 $xmlItem->appendChild($xmlTitle);
 
-                // link (ссылка на конкретную новость)
                 $itemLink = self::RSS_LINK . '?id=' . $item['id'];
                 $xmlLink = $dom->createElement('link', $itemLink);
                 $xmlItem->appendChild($xmlLink);
 
-                // description (ОБЯЗАТЕЛЬНО с CDATA секцией!)
                 $xmlDesc = $dom->createElement('description');
                 $cdata = $dom->createCDATASection($item['description']);
                 $xmlDesc->appendChild($cdata);
                 $xmlItem->appendChild($xmlDesc);
 
-                // pubDate (формат RFC 2822, требуемый стандартом RSS)
                 $pubDateStr = date(DATE_RSS, (int)$item['datetime']);
                 $xmlPubDate = $dom->createElement('pubDate', $pubDateStr);
                 $xmlItem->appendChild($xmlPubDate);
 
-                // category
                 $xmlCategory = $dom->createElement('category', htmlspecialchars($item['category'], ENT_XML1, 'UTF-8'));
                 $xmlItem->appendChild($xmlCategory);
 
-                // Привязываем item к channel
                 $channel->appendChild($xmlItem);
             }
         }
 
-        // 7. Сохраняем файл на диск (имя из константы RSS_NAME)
-        $dom->save(self::RSS_NAME);
+        $dom->save(__DIR__ . '/' . self::RSS_NAME);
     }
 }
 ?>

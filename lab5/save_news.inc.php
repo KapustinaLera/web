@@ -7,7 +7,7 @@ $category = filter_input(
     INPUT_POST,
     'category',
     FILTER_VALIDATE_INT,
-    ['options' => ['min_range' => 1, 'max_range' => 3]]
+    ['options' => ['min_range' => 1]]
 );
 
 if (
