@@ -1,16 +1,11 @@
 @startuml Lab5_XML_RSS
 skinparam classAttributeIconSize 0
-left to right direction
 
-' === Интерфейсы ===
+' === Интерфейс БД ===
 interface INewsDB {
   +saveNews(title, category, description, source): boolean
   +getNews(): array
   +deleteNews(id): boolean
-}
-
-interface IteratorAggregate {
-  +getIterator(): Traversable
 }
 
 ' === Главный класс NewsDB ===
@@ -27,12 +22,11 @@ class NewsDB {
   +getNews(): array
   +deleteNews(id): boolean
   -getCategories(): array
-  +getIterator(): Traversable
   +createRss(): void
   #getDb(): SQLite3
 }
 
-' === Классы БД ===
+' === Класс БД ===
 class SQLite3 {
   +query(sql): SQLite3Result
   +exec(sql): bool
@@ -40,9 +34,10 @@ class SQLite3 {
   +close(): bool
 }
 
+' === Итератор для категорий (остался из 4-й лабы) ===
 class ArrayIterator
 
-' === DOM-классы  ===
+' === DOM-классы (новое в 5-й лабе для RSS) ===
 class DOMDocument {
   +formatOutput: bool
   +preserveWhiteSpace: bool
@@ -65,10 +60,12 @@ class DOMCdataSection
 
 ' === Связи ===
 INewsDB <|.. NewsDB : implements
-IteratorAggregate <|.. NewsDB : implements
 NewsDB --> SQLite3 : uses
-NewsDB ..> ArrayIterator : creates in getIterator()
 
+' Создание итератора для категорий
+NewsDB ..> ArrayIterator : creates
+
+' Создание RSS через DOM
 NewsDB ..> DOMDocument : creates in createRss()
 DOMDocument o--> DOMElement : creates
 DOMDocument o--> DOMAttr : creates
