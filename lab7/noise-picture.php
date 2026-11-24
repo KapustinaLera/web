@@ -39,7 +39,8 @@ for ($i = 0; $i < strlen($captcha); $i++) {
         random_int(0, 80)
     );
 
-    $yPos = $y + rand(0, 15);
+    // Уменьшенный разброс по высоте 
+    $yPos = $y + rand(0, 5);
 
     imagettftext($image, $size, $angle, $x, $yPos, $color, $font, $char);
 
