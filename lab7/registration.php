@@ -6,15 +6,15 @@ $resultMessage = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_SESSION['captcha']) || $_SESSION['captcha'] === '') {
-        $resultMessage = '<p style="color: red; font-weight: bold;">⚠️ Сервер не получил запрос на картинку. Включите отображение изображений в браузере.</p>';
+        $resultMessage = '<p style="color: red; font-weight: bold;"> Сервер не получил запрос на картинку. Включите отображение изображений в браузере.</p>';
     } else {
         $answer = isset($_POST['answer']) ? strtoupper(trim($_POST['answer'])) : '';
         $expected = strtoupper($_SESSION['captcha']);
 
         if ($answer === $expected && $answer !== '') {
-            $resultMessage = '<p style="color: green; font-weight: bold;">✅ Отлично! Код введён верно.</p>';
+            $resultMessage = '<p style="color: green; font-weight: bold;">Отлично! Код введён верно.</p>';
         } else {
-            $resultMessage = '<p style="color: red; font-weight: bold;">❌ Неверный код. Попробуйте ещё раз.</p>';
+            $resultMessage = '<p style="color: red; font-weight: bold;">Неверный код. Попробуйте ещё раз.</p>';
         }
     }
     unset($_SESSION['captcha']);
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <div id="img-warning">
-        ⚠️ Внимание: Изображение капчи не загрузилось. Пожалуйста, включите отображение картинок в настройках вашего браузера и обновите страницу.
+         Внимание: Изображение капчи не загрузилось. Пожалуйста, включите отображение картинок в настройках вашего браузера и обновите страницу.
     </div>
 
     <form action="" method="post">
@@ -78,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
         
-        // Также проверяем через 2 секунды (на случай медленной загрузки)
         setTimeout(function() {
             var img = document.getElementById('captcha-img');
             var warning = document.getElementById('img-warning');
