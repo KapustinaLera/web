@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div>
                 <label>Введите строку:</label>
-                <input type="text" name="answer" size="6" required>
+                <input type="text" name="answer" size="6" required autofocus>
             </div>
             <br>
             <input type="submit" value="Подтвердить">
