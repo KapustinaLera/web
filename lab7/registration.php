@@ -1,25 +1,22 @@
 <?php
+declare(strict_types=1);
 session_start();
-$message = '';
 
-// Проверяем, была ли отправлена форма
+$resultMessage = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
     if (!isset($_SESSION['captcha']) || $_SESSION['captcha'] === '') {
-        $message = '<p style="color: red; font-weight: bold;">⚠️ Похоже, у вас отключен показ изображений в браузере. Пожалуйста, включите их в настройках и обновите страницу.</p>';
+        $resultMessage = '<p style="color: red; font-weight: bold;">⚠️ Сервер не получил запрос на картинку. Включите отображение изображений в браузере.</p>';
     } else {
-        // 2. ПРОВЕРКА ВВЕДЕННОГО КОДА
         $answer = isset($_POST['answer']) ? strtoupper(trim($_POST['answer'])) : '';
         $expected = strtoupper($_SESSION['captcha']);
 
         if ($answer === $expected && $answer !== '') {
-            $message = '<p style="color: green; font-weight: bold;">✅ Отлично! Код введен верно.</p>';
+            $resultMessage = '<p style="color: green; font-weight: bold;">✅ Отлично! Код введён верно.</p>';
         } else {
-            $message = '<p style="color: red; font-weight: bold;">❌ Неверный код. Попробуйте еще раз.</p>';
+            $resultMessage = '<p style="color: red; font-weight: bold;">❌ Неверный код. Попробуйте ещё раз.</p>';
         }
     }
-    
-    // 3. Очищаем сессию после проверки, чтобы при обновлении страницы была новая капча
     unset($_SESSION['captcha']);
 }
 ?>
@@ -28,21 +25,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="utf-8">
     <title>Регистрация</title>
+    <style>
+        #img-warning {
+            display: none;
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <h1>Регистрация</h1>
     
-    <!-- Вывод сообщения об ошибке или успехе -->
-    <?php if ($message !== ''): ?>
-        <div style="margin-bottom: 20px; padding: 10px; background: #f9f9f9; border: 1px solid #ccc;">
-            <?= $message ?>
+    <?php if ($resultMessage !== ''): ?>
+        <div style="margin-bottom: 15px; padding: 10px; background: #fff3f3; border: 1px solid red;">
+            <?= $resultMessage ?>
         </div>
     <?php endif; ?>
 
+    <div id="img-warning">
+        ⚠️ Внимание: Изображение капчи не загрузилось. Пожалуйста, включите отображение картинок в настройках вашего браузера и обновите страницу.
+    </div>
+
     <form action="" method="post">
         <div>
-            <!-- ?v=<?= time() ?> нужен, чтобы браузер не показывал старую картинку из кэша -->
-            <img src="noise-picture.php?v=<?= time() ?>" alt="Введите код с картинки">
+            <img id="captcha-img" 
+                 src="noise-picture.php?v=<?= time() ?>" 
+                 alt="Введите код с картинки"
+                 style="display: block;">
         </div>
         <div>
             <label>Введите строку:</label>
@@ -51,5 +65,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <br>
         <input type="submit" value="Подтвердить">
     </form>
+
+    <script>
+        // Проверка после полной загрузки страницы
+        window.addEventListener('load', function() {
+            var img = document.getElementById('captcha-img');
+            var warning = document.getElementById('img-warning');
+            
+            // Проверяем, загрузилась ли картинка
+            if (!img.complete || img.naturalWidth === 0) {
+                warning.style.display = 'block';
+            }
+        });
+        
+        // Также проверяем через 2 секунды (на случай медленной загрузки)
+        setTimeout(function() {
+            var img = document.getElementById('captcha-img');
+            var warning = document.getElementById('img-warning');
+            
+            if (!img.complete || img.naturalWidth === 0) {
+                warning.style.display = 'block';
+            }
+        }, 2000);
+    </script>
 </body>
 </html>
