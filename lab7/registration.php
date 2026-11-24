@@ -6,7 +6,7 @@ $resultMessage = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_SESSION['captcha']) || $_SESSION['captcha'] === '') {
-        $resultMessage = '<p style="color: red; font-weight: bold;"> Сервер не получил запрос на картинку. Включите отображение изображений в браузере.</p>';
+        $resultMessage = '<p style="color: red; font-weight: bold;">Сервер не получил запрос на картинку. Включите отображение изображений в браузере.</p>';
     } else {
         $answer = isset($_POST['answer']) ? strtoupper(trim($_POST['answer'])) : '';
         $expected = strtoupper($_SESSION['captcha']);
@@ -36,6 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 4px;
             font-weight: bold;
         }
+        .form-container {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -51,39 +54,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
          Внимание: Изображение капчи не загрузилось. Пожалуйста, включите отображение картинок в настройках вашего браузера и обновите страницу.
     </div>
 
-    <form action="" method="post">
-        <div>
-            <img id="captcha-img" 
-                 src="noise-picture.php?v=<?= time() ?>" 
-                 alt="Введите код с картинки"
-                 style="display: block;">
-        </div>
-        <div>
-            <label>Введите строку:</label>
-            <input type="text" name="answer" size="6" required>
-        </div>
-        <br>
-        <input type="submit" value="Подтвердить">
-    </form>
+    <div class="form-container" id="reg-form">
+        <form action="" method="post">
+            <div>
+                <img id="captcha-img" 
+                     src="noise-picture.php?v=<?= time() ?>" 
+                     alt="Введите код с картинки"
+                     style="display: block;">
+            </div>
+            <div>
+                <label>Введите строку:</label>
+                <input type="text" name="answer" size="6" required>
+            </div>
+            <br>
+            <input type="submit" value="Подтвердить">
+        </form>
+    </div>
 
     <script>
-        // Проверка после полной загрузки страницы
         window.addEventListener('load', function() {
             var img = document.getElementById('captcha-img');
             var warning = document.getElementById('img-warning');
+            var form = document.getElementById('reg-form');
             
-            // Проверяем, загрузилась ли картинка
             if (!img.complete || img.naturalWidth === 0) {
                 warning.style.display = 'block';
+                form.style.display = 'none';
             }
         });
         
         setTimeout(function() {
             var img = document.getElementById('captcha-img');
             var warning = document.getElementById('img-warning');
+            var form = document.getElementById('reg-form');
             
             if (!img.complete || img.naturalWidth === 0) {
                 warning.style.display = 'block';
+                form.style.display = 'none';
             }
         }, 2000);
     </script>
